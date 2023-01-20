@@ -21,7 +21,7 @@ class APIViewWithMeter(APIView):
         except Meter.DoesNotExist:
             return None
 
-   def get_meter_or_404(self, a_meter_key):
+    def get_meter_or_404(self, a_meter_key):
         meter_instance = self.__get_meter_object__(a_meter_key)
         if not meter_instance:
             return Response(
