@@ -11,3 +11,4 @@ class Measurement(models.Model):
     recorded_consumption = models.FloatField(null=True)
     measurement_key = models.AutoField(primary_key=True)
     meter_key = models.ForeignKey(Meter, on_delete=models.CASCADE, blank=True)
+

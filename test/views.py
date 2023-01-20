@@ -62,25 +62,23 @@ class GetConsumptionView(APIViewWithMeMeasurement):
             status=status.HTTP_200_OK)
 
 
-class PostMeterAPIView(BasePostAPIView):
+class PostMeterAPIView(BasePostAPIView, APIViewWithMeter):
 
-    @staticmethod
     @swagger_auto_schema(
         request_body=MeterSerializer,
         operation_description="Create a Meter",
         operation_id="Meter_create",
         responses={200: MeterSerializer}
     )
-    def post(request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
+        a_meter_key = request.data.get('meter_key')
         data = {
             'name': request.data.get('name'),
-            'meter_key': request.data.get('meter_key')
+            'meter_key': a_meter_key
         }
         serializer = MeterSerializer(data=data)
         if serializer.is_valid():
-            meter_instance = serializer.save()
-            Measurement.objects.create(meter_key=meter_instance,
-                                       recorded_consumption=request.data.get('recorded_consumption'))
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -97,24 +95,26 @@ class GetMeterAPIView(APIViewWithMeter):
 
 
 class PostMeasurementAPIView(BasePostAPIView, APIViewWithMeter):
-    serializer = MeasurementSerializer()
 
     @swagger_auto_schema(
         request_body=MeasurementSerializer,
         operation_description='Create a Measurement for the Meter whose key is a_meter_key. The recorded consumption '
                               'should be > 0',
         operation_id="Create_measurement",
-        # responses={200: MeasurementSerializer}
+        responses={200: MeasurementSerializer}
     )
     def post(self, request, a_meter_key, *args, **kwargs):
-        meter_instance = self.get_meter_or_404(a_meter_key)
         recorded_consumption = request.data.get('recorded_consumption')
         if recorded_consumption < 0:
             return Response({"res": "Recorded consumption is negative."},
                             status=status.HTTP_412_PRECONDITION_FAILED)
-        measurement = Measurement.objects.create(meter_key=meter_instance, recorded_consumption=recorded_consumption)
-        serializer = MeasurementSerializer(measurement)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = {"meter_key":a_meter_key,
+                "recorded_consumption":recorded_consumption}
+        serializer = MeasurementSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetMaxConsumptionAPIView(APIViewWithMeMeasurement):
