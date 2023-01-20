@@ -73,7 +73,7 @@ class PostMeterAPIView(BasePostAPIView):
         request_body=MeterSerializer,
         operation_description="Create a Meter",
         operation_id="Meter_create",
-        # responses={200: MeterSerializer}
+        responses={200: MeterSerializer}
     )
     def post(request, *args, **kwargs):
         data = {
@@ -82,9 +82,9 @@ class PostMeterAPIView(BasePostAPIView):
         }
         serializer = MeterSerializer(data=data)
         if serializer.is_valid():
-            Measurement.objects.create(meter_key=data['meter_instance'],
-                                       recorded_consumption=data['recorded_consumption'])
-
+            meter_instance = serializer.save()
+            Measurement.objects.create(meter_key=meter_instance,
+                                       recorded_consumption=request.data.get('recorded_consumption'))
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -94,7 +94,7 @@ class GetMeterAPIView(APIViewWithMeter):
     @swagger_auto_schema(
         operation_description="Return a Meter whose key is a_meter_key",
         operation_id="Get_meter",
-        # responses={200: MeterSerializer}
+        responses={200: MeterSerializer}
     )
     def get(self, request, a_meter_key, *args, **kwargs):
         self.get_meter_or_404(a_meter_key)
@@ -127,7 +127,7 @@ class GetMaxConsumptionAPIView(APIViewWithMeMeasurement):
         operation_description="Return to the Measurement with Maximum consumption "
                               "of the meter whose key is a_meter_key",
         operation_id="Get_max_measurement",
-        # responses={200: MeasurementSerializer}
+        responses={200: MeasurementSerializer}
     )
     def get(self, request, a_meter_key, *args, **kwargs):
         return self.get_with(Max('recorded_consumption'), request, a_meter_key)
@@ -139,7 +139,7 @@ class GetMinConsumptionAPIView(APIViewWithMeMeasurement):
         operation_description="Return to the Measurement with Minimum "
                               "consumption of the meter whose key is a_meter_key",
         operation_id="Get_min_measurement",
-        # responses={200: MeasurementSerializer}
+        responses={200: MeasurementSerializer}
     )
     def get(self, request, a_meter_key, *args, **kwargs):
         return self.get_with(Min('recorded_consumption'), request, a_meter_key)
