@@ -21,11 +21,7 @@ class APIViewWithMeter(APIView):
         except Meter.DoesNotExist:
             return None
 
-    def check_meter_exists(self, a_meter_key):
-        meter_instance = self.__get_meter_object__(a_meter_key)
-        return False if not meter_instance else True
-
-    def get_meter_or_404(self, a_meter_key):
+   def get_meter_or_404(self, a_meter_key):
         meter_instance = self.__get_meter_object__(a_meter_key)
         if not meter_instance:
             return Response(
@@ -97,7 +93,7 @@ class GetMeterAPIView(APIViewWithMeter):
         responses={200: MeterSerializer}
     )
     def get(self, request, a_meter_key, *args, **kwargs):
-        self.get_meter_or_404(a_meter_key)
+        return self.get_meter_or_404(a_meter_key)
 
 
 class PostMeasurementAPIView(BasePostAPIView, APIViewWithMeter):
@@ -146,7 +142,6 @@ class GetMinConsumptionAPIView(APIViewWithMeMeasurement):
 
 
 class GetTotalConsumptionAPIView(GetConsumptionView):
-    serializer = MeasurementSerializer()
 
     @swagger_auto_schema(
         operation_description="'Return to the total consumption of the meter whose key is a_meter_key'",
