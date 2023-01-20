@@ -47,7 +47,7 @@ class APIViewWithMeMeasurement(APIViewWithMeter):
             recorded_consumption=max_measurement['max_consumption']).first()
         if max_measurement is None:
             return Response(
-                {"res": "The Meter hasnot any recorded consumption"},
+                {"res": "The Meter hasn't any recorded consumption"},
                 status=status.HTTP_400_BAD_REQUEST)
         serializer = MeasurementSerializer(max_measurement)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -73,7 +73,7 @@ class PostMeterAPIView(BasePostAPIView):
         request_body=MeterSerializer,
         operation_description="Create a Meter",
         operation_id="Meter_create",
-        responses={200: MeterSerializer}
+        # responses={200: MeterSerializer}
     )
     def post(request, *args, **kwargs):
         data = {
@@ -94,7 +94,7 @@ class GetMeterAPIView(APIViewWithMeter):
     @swagger_auto_schema(
         operation_description="Return a Meter whose key is a_meter_key",
         operation_id="Get_meter",
-        responses={200: MeterSerializer}
+        # responses={200: MeterSerializer}
     )
     def get(self, request, a_meter_key, *args, **kwargs):
         self.get_meter_or_404(a_meter_key)
@@ -105,10 +105,10 @@ class PostMeasurementAPIView(BasePostAPIView, APIViewWithMeter):
 
     @swagger_auto_schema(
         request_body=MeasurementSerializer,
-        operation_description='Create a Measurement for the Meter whose key is a_meter_key. The recorded consuptiom '
+        operation_description='Create a Measurement for the Meter whose key is a_meter_key. The recorded consumption '
                               'should be > 0',
         operation_id="Create_measurement",
-        responses={200: MeasurementSerializer}
+        # responses={200: MeasurementSerializer}
     )
     def post(self, request, a_meter_key, *args, **kwargs):
         meter_instance = self.get_meter_or_404(a_meter_key)
@@ -122,26 +122,24 @@ class PostMeasurementAPIView(BasePostAPIView, APIViewWithMeter):
 
 
 class GetMaxConsumptionAPIView(APIViewWithMeMeasurement):
-    serializer = MeasurementSerializer()
 
     @swagger_auto_schema(
         operation_description="Return to the Measurement with Maximum consumption "
                               "of the meter whose key is a_meter_key",
         operation_id="Get_max_measurement",
-        responses={200: MeasurementSerializer}
+        # responses={200: MeasurementSerializer}
     )
     def get(self, request, a_meter_key, *args, **kwargs):
         return self.get_with(Max('recorded_consumption'), request, a_meter_key)
 
 
 class GetMinConsumptionAPIView(APIViewWithMeMeasurement):
-    serializer = MeasurementSerializer()
 
     @swagger_auto_schema(
         operation_description="Return to the Measurement with Minimum "
                               "consumption of the meter whose key is a_meter_key",
         operation_id="Get_min_measurement",
-        responses={200: MeasurementSerializer}
+        # responses={200: MeasurementSerializer}
     )
     def get(self, request, a_meter_key, *args, **kwargs):
         return self.get_with(Min('recorded_consumption'), request, a_meter_key)
