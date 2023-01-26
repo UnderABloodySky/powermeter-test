@@ -31,4 +31,4 @@ EXPOSE 9000
 EXPOSE 9000
 
 # Iniciar el servidor de desarrollo de Django
-CMD ["python", "manage.py", "runserver", "0.0.0.0:9000"]
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:9000"]
