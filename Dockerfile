@@ -25,10 +25,10 @@ RUN $VIRTUAL_ENV/bin/pip install django
 RUN $VIRTUAL_ENV/bin/pip install django-rest-framework
 
 # Expone el puerto 8000 para que la aplicación pueda recibir peticiones
-EXPOSE 8000
+EXPOSE 9000
 
 # Especifica el comando para iniciar la aplicación
-EXPOSE 8000
+EXPOSE 9000
 
 # Iniciar el servidor de desarrollo de Django
 CMD ["python", "manage.py", "runserver", "0.0.0.0:9000"]
