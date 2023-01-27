@@ -1,9 +1,11 @@
 from django.contrib import admin
-from django.urls import include, path
-from test import urls as test_urls
+from django.urls import include
+from django.urls import path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
+
+from test import urls as test_urls
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -25,3 +27,4 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('powermeter/', include(test_urls))
 ]
+
